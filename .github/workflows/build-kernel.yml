@@ -19,7 +19,7 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # 禁用浅克隆，解决版本号生成导致的 Git 128 错误
+          fetch-depth: 0
 
       - name: Setup Build Dependencies
         run: |
@@ -33,12 +33,10 @@ jobs:
         run: |
           mkdir -p toolchains
           cd toolchains
-          # 已替换为 GitHub 公开免密 Clang 镜像源
-          git clone https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r416111b.git --depth=1 --single-branch clang
+          git clone https://github.com/kdrag0n/proton-clang.git --depth=1 clang
           git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git --depth=1 --single-branch gcc64
           git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git --depth=1 --single-branch gcc32
 
-          # 将工具链写入 GITHUB_PATH 供脚本调用
           echo "$GITHUB_WORKSPACE/toolchains/clang/bin" >> $GITHUB_PATH
           echo "$GITHUB_WORKSPACE/toolchains/gcc64/bin" >> $GITHUB_PATH
           echo "$GITHUB_WORKSPACE/toolchains/gcc32/bin" >> $GITHUB_PATH
