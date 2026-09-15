@@ -20,6 +20,15 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          submodules: recursive # 自动递归拉取所有 Git 子模块
+
+      - name: Setup KernelSU
+        run: |
+          # 检查并自动补充 drivers/kernelsu 源码
+          if [ ! -d "drivers/kernelsu" ] || [ -z "$(ls -A drivers/kernelsu)" ]; then
+            echo "[+] 正在自动拉取 KernelSU 源码到 drivers/kernelsu..."
+            git clone https://github.com/tiann/KernelSU drivers/kernelsu
+          fi
 
       - name: Setup Build Dependencies
         run: |
