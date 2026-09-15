@@ -18,6 +18,8 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 禁用浅克隆，解决版本号生成导致的 Git 128 错误
 
       - name: Setup Build Dependencies
         run: |
@@ -31,13 +33,12 @@ jobs:
         run: |
           mkdir -p toolchains
           cd toolchains
-          # 克隆 SM8350 常用 AOSP Clang 工具链 (r416111b)
-          git clone https://gitlab.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r416111b.git --depth=1 clang
-          # 克隆 aarch64 与 arm GCC 交叉编译器
-          git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git --depth=1 gcc64
-          git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git --depth=1 gcc32
+          # 已替换为 GitHub 公开免密 Clang 镜像源
+          git clone https://github.com/crdroidandroid/android_prebuilts_clang_host_linux-x86_clang-r416111b.git --depth=1 --single-branch clang
+          git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git --depth=1 --single-branch gcc64
+          git clone https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git --depth=1 --single-branch gcc32
 
-          # 将工具链写入 GITHUB_PATH，确保 build_device.sh 能直接在全局环境变量中调用
+          # 将工具链写入 GITHUB_PATH 供脚本调用
           echo "$GITHUB_WORKSPACE/toolchains/clang/bin" >> $GITHUB_PATH
           echo "$GITHUB_WORKSPACE/toolchains/gcc64/bin" >> $GITHUB_PATH
           echo "$GITHUB_WORKSPACE/toolchains/gcc32/bin" >> $GITHUB_PATH
